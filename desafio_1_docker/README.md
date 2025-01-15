@@ -27,6 +27,7 @@ A imagem Docker publicada pode ser encontrada no Dockerhub em [seu link aqui](ht
 Construção da imagem:
 
 ```bash
+docker build -t patriciabcatandi/conversao-distancia:v1 .
 docker build -t patriciabcatandi/conversao-distancia:v1 -f Dockerfile .
 ```
 

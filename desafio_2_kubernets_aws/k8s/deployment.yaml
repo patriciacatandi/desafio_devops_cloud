@@ -1,0 +1,90 @@
+# Deploy Postgres dentro do cluster kubernets
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgre
+spec: # especificação do deployment
+  selector: # para selecionar os pods
+    matchLabels:
+      app: postgre # tem que se igual a label qie irá declarar no template do código
+  template:
+    metadata: 
+      labels:
+        app: postgre
+    spec:  #especificação dos containers que teremos nos pods
+      containers:
+        - name: postgre
+          image: postgres:13.16  # do docherhub
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: fakeshop
+            - name: POSTGRES_USER
+              value: fakeshop
+            - name: POSTGRES_PASSWORD
+              value: Pg1234
+
+---
+# Declarar o service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgre
+spec:
+  selector:
+    app: postgre
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+
+
+######### deploy da aplicação web
+
+# Deploy aplicação web dentro do cluster kubernets
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fakeshop
+spec: # especificação do deployment
+  replicas: 2
+  selector: # para selecionar os pods
+    matchLabels:
+      app: fakeshop # tem que se igual a label qie irá declarar no template do código
+  template:
+    metadata: 
+      labels:
+        app: fakeshop
+    spec:  #especificação dos containers que teremos nos pods
+      containers:
+        - name: fakeshop
+          image: patriciabcatandi/fake-shop:v1  # do docherhub
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DB_HOST
+              value: postgre # utilizar o nome do service
+            - name: DB_USER
+              value: fakeshop
+            - name: DB_PASSWORD
+              value: Pg1234
+            - name: DB_NAME
+              value: fakeshop
+            - name: FLASK_APP
+              value: index.py
+
+---
+# Declarar o service
+apiVersion: v1
+kind: Service
+metadata:
+  name: fakeshop
+spec:
+  selector:
+    app: fakeshop
+  ports:
+    - port: 80
+      targetPort: 5000
+  type: LoadBalancer
+  # já configura para acessar externamente, a propria aws faz isso

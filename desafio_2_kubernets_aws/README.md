@@ -47,6 +47,11 @@ Para podermos acessar a aplicação precisamos saber qual domínio ele utilizou
 kubectl get service
 ```
 
+Deletar o que foi feito no kubernetes
 ```bash
+kubectl delete -f k8s/deployment.yaml
+```
 
+```bash
+kubectl get all
 ```

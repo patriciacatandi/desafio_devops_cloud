@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgre
+  name: postgres
 spec: # especificação do deployment
   selector: # para selecionar os pods
     matchLabels:
-      app: postgre # tem que se igual a label qie irá declarar no template do código
+      app: postgres # tem que se igual a label qie irá declarar no template do código
   template:
-    metadata: 
+    metadata:
       labels:
-        app: postgre
+        app: postgres
     spec:  #especificação dos containers que teremos nos pods
       containers:
-        - name: postgre
-          image: postgres:13.16  # do docherhub
+        - name: postgres
+          image: postgres:13.16  # do dockerhub
           ports:
             - containerPort: 5432
           env:
@@ -30,16 +30,15 @@ spec: # especificação do deployment
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgre
+  name: postgres
 spec:
   selector:
-    app: postgre
+    app: postgres
   ports:
     - port: 5432
       targetPort: 5432
 
-
-
+---
 ######### deploy da aplicação web
 
 # Deploy aplicação web dentro do cluster kubernets
@@ -48,23 +47,23 @@ kind: Deployment
 metadata:
   name: fakeshop
 spec: # especificação do deployment
-  replicas: 2
+  replicas: 4
   selector: # para selecionar os pods
     matchLabels:
       app: fakeshop # tem que se igual a label qie irá declarar no template do código
   template:
-    metadata: 
+    metadata:
       labels:
         app: fakeshop
     spec:  #especificação dos containers que teremos nos pods
       containers:
         - name: fakeshop
-          image: patriciabcatandi/fake-shop:v1  # do docherhub
+          image: patriciabcatandi/fake-shop:v1
           ports:
             - containerPort: 5000
           env:
             - name: DB_HOST
-              value: postgre # utilizar o nome do service
+              value: postgres # utilizar o nome do service
             - name: DB_USER
               value: fakeshop
             - name: DB_PASSWORD
@@ -73,7 +72,6 @@ spec: # especificação do deployment
               value: fakeshop
             - name: FLASK_APP
               value: index.py
-
 ---
 # Declarar o service
 apiVersion: v1
